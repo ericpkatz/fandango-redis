@@ -19,6 +19,9 @@ Ticket.afterCreate(async function(ticket){
   const movie = await db.models.movie.findByPk(ticket.movieId);
   await movie.update({ ticketCount: movie.ticketCount + 1 });
   /*
+  await db.query('update movies set "ticketCount" = "ticketCount" + 1 WHERE id=?;', { replacements: [ticket.movieId], type: Sequelize.QueryTypes.UPDATE });
+  */
+  /*
   await db.transaction({isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE}, async (t)=> {
     try {
     const movie = await db.models.movie.findByPk(ticket.movieId, { transaction: t});

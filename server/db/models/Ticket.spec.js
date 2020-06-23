@@ -15,7 +15,7 @@ describe('Ticket Model', () => {
     ]);
     ghostbusters = movies[0];
     rocky = movies[1];
-    await Promise.all([
+    const tickets = [
       Ticket.create({ movieId: rocky.id }),
       Ticket.create({ movieId: rocky.id }),
       Ticket.create({ movieId: rocky.id }),
@@ -25,14 +25,15 @@ describe('Ticket Model', () => {
       Ticket.create({ movieId: ghostbusters.id }),
       Ticket.create({ movieId: ghostbusters.id }),
       Ticket.create({ movieId: ghostbusters.id }),
-    ]);
+    ];
+    await Promise.all(tickets);
     await rocky.reload();
-    blockbuster = Movie.blockbuster();
+    //blockbuster = Movie.blockbuster();
   })
 
   describe('#ticketCount', ()=> {
     it('increments the ticketCount of it\'s movie', ()=> {
-      expect(rocky.ticketCount).to.equal(5);
+      expect(rocky.ticketCount).to.equal(6);
     });
   });
 
