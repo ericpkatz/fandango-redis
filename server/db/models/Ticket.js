@@ -17,7 +17,10 @@ const Ticket = db.define('ticket', {
 
 Ticket.afterCreate(async function(ticket){
   const movie = await db.models.movie.findByPk(ticket.movieId);
-  await movie.update({ ticketCount: movie.ticketCount + 1 });
+  await redis.incr(movie.ticketCountKey);
+  await redis.zincrby('ticketCounts', 1, movie.id);
+  
+  //await movie.update({ ticketCount: movie.ticketCount + 1 });
   /*
   await db.query('update movies set "ticketCount" = "ticketCount" + 1 WHERE id=?;', { replacements: [ticket.movieId], type: Sequelize.QueryTypes.UPDATE });
   */

@@ -2,13 +2,15 @@
 
 const {expect} = require('chai')
 const db = require('../index')
+const redis = require('../redis')
 const Ticket = db.models.ticket;
 const Movie = db.models.movie;
 
 describe('Ticket Model', () => {
-  let rocky, blockbuster, ghostbusters;
+  let rocky, blockbuster, ghostbusters, ticketCount;
   beforeEach(async() => {
     await db.sync({force: true})
+    await redis.flushdb();
     const movies = await Promise.all([
       Movie.create({ title: 'Ghostbusters' }),
       Movie.create({ title: 'Rocky' })
@@ -25,20 +27,24 @@ describe('Ticket Model', () => {
       Ticket.create({ movieId: ghostbusters.id }),
       Ticket.create({ movieId: ghostbusters.id }),
       Ticket.create({ movieId: ghostbusters.id }),
+      Ticket.create({ movieId: ghostbusters.id }),
+      //Ticket.create({ movieId: ghostbusters.id }),
     ];
     await Promise.all(tickets);
     await rocky.reload();
-    //blockbuster = Movie.blockbuster();
+    ticketCount = await rocky.ticketCount();
+    blockbuster = await Movie.blockbuster();
   })
 
   describe('#ticketCount', ()=> {
     it('increments the ticketCount of it\'s movie', ()=> {
-      expect(rocky.ticketCount).to.equal(6);
+      expect(ticketCount).to.equal(6);
     });
   });
 
   describe('Movie.blockbuster', ()=> {
     it('returns movie which sold the most tickets', ()=> {
+      expect(blockbuster.title).to.equal('Rocky');
     });
   });
 
